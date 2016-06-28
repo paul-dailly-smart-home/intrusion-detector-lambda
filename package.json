@@ -1,0 +1,18 @@
+{
+  "name": "smart-home-motion-events-lambda",
+  "version": "1.0.0",
+  "description": "Processes motion detected events",
+  "main": "eventsources/kinesisEventSource.js",
+  "dependencies": {},
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.5.3",
+    "sinon": "^1.17.4",
+    "sinon-chai": "^2.8.0"
+  },
+  "scripts": {
+    "test-unit": "NODE_ENV=test mocha './src/**/*.spec.js'"
+  },
+  "author": "Paul Dailly",
+  "license": "ISC"
+}

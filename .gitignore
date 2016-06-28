@@ -1,0 +1,7 @@
+context.json
+*.env
+event.json
+node_modules
+build
+.idea
+.DS_Store
