@@ -6,13 +6,17 @@
   "dependencies": {},
   "devDependencies": {
     "chai": "^3.5.0",
+    "gulp": "^3.9.1",
+    "gulp-istanbul": "^1.0.0",
+    "gulp-mocha": "^2.2.0",
     "istanbul": "^0.4.4",
     "mocha": "^2.5.3",
+    "mochawesome": "^1.3.5",
     "sinon": "^1.17.4",
     "sinon-chai": "^2.8.0"
   },
   "scripts": {
-    "test-unit": "istanbul cover _mocha $(find ./src -name \"*.spec.js\" -not -path \"./node_modules/*,./src/**/*.spec.js\")  "
+    "test": "gulp test"
   },
   "author": "Paul Dailly",
   "license": "ISC"

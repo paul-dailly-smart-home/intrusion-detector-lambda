@@ -6,9 +6,9 @@ describe('Kinesis motion detected event processing', ()=> {
   it('decodes the motion detected events', (done) => {
 
     const kinesisEvent = createKinesisEvent();
-
+    
     kinesisEventSource.motionEventConsumer(kinesisEvent, {}, (err, decodedEvents) => {
-      expect(decodedEvents.length).to.eql(3);
+      expect(decodedEvents.length).to.eql(2);
       expect(decodedEvents[0].cameraId).to.eql('camera3');
       expect(decodedEvents[1].cameraId).to.eql('camera1');
       done();
