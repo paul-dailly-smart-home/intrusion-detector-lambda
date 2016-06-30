@@ -16,7 +16,8 @@
     "sinon-chai": "^2.8.0"
   },
   "scripts": {
-    "test": "gulp test"
+    "test": "gulp test",
+    "deploy-from-ci": "node-lambda deploy -a $AWS_DEPLOY_USER_ACCESS_KEY -s $AWS_DEPLOY_USER_SECRET_KEY --role arn:aws:iam::810905322061:role/lambda_kinesis_role -e $DEPLOYMENT_ENV -d 'Processes motion detected events from Kinesis stream (Travis build: $TRAVIS_BUILD_NUMBER, Commit id: $TRAVIS_COMMIT)' --configFile deploy.env"
   },
   "author": "Paul Dailly",
   "license": "ISC"
