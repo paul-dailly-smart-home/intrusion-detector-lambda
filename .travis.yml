@@ -6,4 +6,4 @@ env:
   - DEPLOYMENT_ENV=development
 script: npm test
 after_success:
-  - npm run deploy-from-ci
+  - ./deploy.sh
