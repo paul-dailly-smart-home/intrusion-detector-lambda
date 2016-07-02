@@ -6,4 +6,5 @@ env:
   - DEPLOYMENT_ENV=development
 script: npm test
 after_success:
+  - chmod a+x deploy.sh
   - ./deploy.sh
