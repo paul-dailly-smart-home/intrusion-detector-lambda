@@ -2,7 +2,7 @@ exports.motionEventConsumer = (event, context) => {
 
   event.Records.forEach((record) => {
     if (record.eventName !== 'INSERT') {
-      console.log(`Ignoring event record with DynamoDb event type ${record.eventName}`);
+      console.log(`Ignoring event record with DynamoDb event type: ${record.eventName}`);
       return;
     }
     var eventDecoded = new Buffer(record.dynamodb.NewImage.event_raw.B, 'base64').toString('ascii');
