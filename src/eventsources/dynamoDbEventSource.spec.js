@@ -13,7 +13,6 @@ describe('DynamoDb motion detected events processing', ()=> {
     fakeClock = sinon.useFakeTimers(now);
     sandbox = sinon.sandbox.create();
     sandbox.stub(uuid, 'v4', ()=> uniqueId);
-
   });
 
   afterEach(()=> {
@@ -22,6 +21,7 @@ describe('DynamoDb motion detected events processing', ()=> {
   });
 
   it('ignores all other dynamo events except INSERT', (done)=>{
+    
     const dynamoEvent = _createDynamoDbEventRecord('NOT_INSERT');
     dynamoEventSource.motionEventConsumer({"Records": [dynamoEvent]}, null, (err)=> {
       expect(err.message).to.eql('DynamoDb event not of type INSERT');

@@ -54,6 +54,7 @@ exports.motionEventConsumer = (event, context, callback) => {
     if (record.eventName !== 'INSERT') {
       console.log(`Ignoring event record with DynamoDb event type: ${record.eventName}`);
       callback(new Error(NOT_INSERT_EVENT_MESSAGE));
+      return;
     }
     // console.log(`Processing event record ${JSON.stringify(record)}`);
     // var eventId = record.dynamodb.NewImage.eventId.S;
