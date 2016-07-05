@@ -19,7 +19,6 @@ describe('DynamoDb motion detected events processing', ()=> {
   afterEach(()=> {
     sandbox.restore();
     fakeClock.restore();
-    awsMock.restore();
   });
 
   it('ignores all other dynamo events except INSERT', (done)=>{
@@ -48,6 +47,7 @@ describe('DynamoDb motion detected events processing', ()=> {
 
     dynamoEventSource.motionEventConsumer({"Records": [dynamoEvent]}, null, (insertedItem)=> {
       expect(insertedItem).to.eql(expectedIntrusionEntry);
+      awsMock.restore();
       done();
     });
   });
