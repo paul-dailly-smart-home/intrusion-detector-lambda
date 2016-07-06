@@ -6,6 +6,8 @@ machine:
 
   environment:
     CIRCLE_ENV: development
+    TEST_REPORT_FORMAT: junitXml
+    TEST_REPORT_DIR: $CIRCLE_TEST_REPORTS
 
 deployment:
   development:
