@@ -2,12 +2,12 @@ var gulp = require('gulp');
 var mocha = require('gulp-mocha');
 var istanbul = require('gulp-istanbul');
 const TEST_REPORT_FORMAT = process.env.TEST_REPORT_FORMAT == 'junitXml' ? 'junitXml' : 'html';
-const TEST_REPORT_DIR = process.env.TEST_REPORT_DIR || 'build/reports/unit-test';
+const TEST_REPORT_DIR = process.env.TEST_REPORT_DIR || 'build/reports/unit-test/';
 const TEST_REPORTERS = {
   junitXml: {
     reporter: 'mocha-junit-reporter',
     reporterOptions: {
-      mochaFile: TEST_REPORT_DIR
+      mochaFile: TEST_REPORT_DIR + 'junit.xml'
     }
   },
   html: {
