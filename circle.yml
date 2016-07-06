@@ -6,11 +6,13 @@ machine:
 
   environment:
     CIRCLE_ENV: development
-    TEST_REPORT_FORMAT: junitXml
-    TEST_REPORT_DIR: $CIRCLE_TEST_REPORTS
 
 deployment:
   development:
     branch: master
     commands:
       - './node_modules/node-lambda/bin/node-lambda deploy -p true -a $AWS_DEPLOY_USER_ACCESS_KEY -s $AWS_DEPLOY_USER_SECRET_KEY --role arn:aws:iam::810905322061:role/lambdaFunctionRole -e $CIRCLE_ENV -d "Processes motion detected events from DynamoDB stream (CircleCI build: $CIRCLE_BUILD_NUM, Commit id: $CIRCLE_SHA1)"'
+
+  general:
+    artifacts:
+      - "./build"
