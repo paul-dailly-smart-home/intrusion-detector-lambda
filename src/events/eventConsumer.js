@@ -10,6 +10,9 @@ const _extractEventSource = (eventSourceARN) => {
 exports.consume = (event, context, callback) => {
     console.log(`Consume called with ${JSON.stringify(event)}`);
     return event.Records.forEach((record) => {
+        if(record.eventName !== 'INSERT'){
+            return callback();
+        }
         _extractEventSource(record.eventSourceARN)
             .handleEvent(record.dynamodb.NewImage.event.M)
             .then(()=> {
