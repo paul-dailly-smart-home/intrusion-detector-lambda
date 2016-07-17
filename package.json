@@ -1,8 +1,7 @@
 {
-  "name": "smart-home-motion-events-lambda",
+  "name": "smart-home-intrusion-service-lambda",
   "version": "1.0.0",
-  "description": "Processes motion detected events",
-  "main": "eventsources/kinesisEventSource.js",
+  "description": "AWS Lambda Service responsible for managing property intrusions",
   "dependencies": {
     "aws-sdk": "^2.4.4",
     "node-uuid": "^1.4.7"

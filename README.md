@@ -1,4 +1,4 @@
-# intrusion-detector-lambda
+# intrusion-service-lambda
 
 [![Build Status](https://travis-ci.org/pauldailly/smart-home-motion-events-lambda.png)](https://travis-ci.org/pauldailly/smart-home-motion-events-lambda)
 
