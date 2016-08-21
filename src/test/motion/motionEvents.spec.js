@@ -1,51 +1,11 @@
 const eventConsumer = require('../../events/eventConsumer');
-const databaseConnection = require('../../database');
-const localDynamo = require('local-dynamo');
-const fs = require('fs');
-const rimraf = require('rimraf');
+const localDb = require('../localDatabase');
 require('chai').should();
 
 const PROPERTIES_VIEW_TABLE = 'IntrusionServicePropertiesView';
 const INTRUSION_DETECTED_EVENTS_TABLE = 'IntrusionDetectedEvents';
-const DATABASE_FILES_DIRECTORY = '/tmp/intrusion-service-lambda';
 
-var dynamoProcess;
-var dbConnection;
-
-const _createDatabaseFileDirectory = () => {
-
-  return new Promise((resolve, reject)=> {
-    fs.mkdir(DATABASE_FILES_DIRECTORY, (err) => {
-      if (err) {
-        return reject(err);
-      }
-
-      return resolve();
-    });
-  });
-};
-
-const _deleteDatabaseFileDirectory = () => {
-
-  return new Promise((resolve, reject)=> {
-    fs.exists(DATABASE_FILES_DIRECTORY, (exists) => {
-      if (exists) {
-        rimraf(DATABASE_FILES_DIRECTORY, (err) => {
-          if (err) {
-            return reject(err);
-          }
-
-          return resolve();
-        });
-      } else {
-        return resolve();
-      }
-    });
-
-  });
-};
-
-const _createPropertiesView = () => {
+const _createPropertiesViewTable = () => {
   const tableDefinition = {
     AttributeDefinitions: [
       {
@@ -73,15 +33,7 @@ const _createPropertiesView = () => {
     },
     TableName: PROPERTIES_VIEW_TABLE
   };
-  return new Promise((resolve, reject) => {
-    dbConnection.createTable(tableDefinition, (err, data) => {
-      if (err) {
-        return reject(err);
-      }
-
-      return resolve(data);
-    });
-  });
+  return localDb.createDatabaseTable(tableDefinition);
 };
 const _createIntrusionDetectedEventsTable = () => {
   const tableDefinition = {
@@ -111,37 +63,21 @@ const _createIntrusionDetectedEventsTable = () => {
     },
     TableName: INTRUSION_DETECTED_EVENTS_TABLE
   };
-  return new Promise((resolve, reject) => {
-    dbConnection.createTable(tableDefinition, (err, data) => {
-      if (err) {
-        return reject(err);
-      }
-
-      return resolve(data);
-    });
-  });
-};
-const _launchDatabase = ()=> {
-  return new Promise((resolve)=> {
-    dynamoProcess = localDynamo.launch(DATABASE_FILES_DIRECTORY, databaseConnection.DB_PORT);
-    dbConnection = databaseConnection.createDbConnection();
-    resolve();
-  });
+  return localDb.createDatabaseTable(tableDefinition);
 };
 
 describe('Motion events:', ()=> {
 
   beforeEach(() => {
-    return _deleteDatabaseFileDirectory()
-      .then(_createDatabaseFileDirectory)
-      .then(_launchDatabase)
-      .then(_createPropertiesView)
+    return localDb.deleteDatabaseFileDirectory()
+      .then(localDb.createDatabaseFileDirectory)
+      .then(localDb.launchDatabase)
+      .then(_createPropertiesViewTable)
       .then(_createIntrusionDetectedEventsTable)
   });
 
   afterEach(()=> {
-    dynamoProcess.kill('SIGINT');
-    return _deleteDatabaseFileDirectory();
+    return localDb.shutdownDatabase();
   });
 
   const retrieveIntrusionDetectedEvent = ()=> {
@@ -153,20 +89,7 @@ describe('Motion events:', ()=> {
         S: 'property1'
       }
     };
-    const queryParams = {
-      Key: queryCriteria,
-      TableName: INTRUSION_DETECTED_EVENTS_TABLE
-    };
-    return new Promise((resolve, reject)=> {
-      dbConnection.getItem(queryParams, (err, data)=> {
-        if (err) {
-          return reject(err);
-        }
-
-        return resolve(data.Item);
-      });
-    });
-
+    return localDb.retrieveTableItem(queryCriteria, INTRUSION_DETECTED_EVENTS_TABLE);
   };
 
   const givenProperty = (property) => {
@@ -181,15 +104,7 @@ describe('Motion events:', ()=> {
         BOOL: property.alarmEnabled || false
       }
     };
-    return new Promise((resolve, reject)=> {
-      dbConnection.putItem({TableName: PROPERTIES_VIEW_TABLE, Item: item}, (err, data) => {
-        if (err) {
-          return reject(err);
-        }
-
-        return resolve(data);
-      });
-    });
+    return localDb.createTableItem(item, PROPERTIES_VIEW_TABLE);
   };
 
   const _givenPropertyIsAlarmed = (property, tenant) => {
