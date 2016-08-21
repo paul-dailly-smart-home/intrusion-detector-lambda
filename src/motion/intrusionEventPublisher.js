@@ -1,4 +1,3 @@
-const AWS = require('aws-sdk');
 const UUID = require('node-uuid');
 const dbConnection = require('../database').createDbConnection();
 

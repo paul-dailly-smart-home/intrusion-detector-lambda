@@ -69,15 +69,8 @@ const _createIntrusionDetectedEventsTable = () => {
 describe('Motion events:', ()=> {
 
   beforeEach(() => {
-    return localDb.deleteDatabaseFileDirectory()
-      .then(localDb.createDatabaseFileDirectory)
-      .then(localDb.launchDatabase)
-      .then(_createPropertiesViewTable)
+    return _createPropertiesViewTable()
       .then(_createIntrusionDetectedEventsTable)
-  });
-
-  afterEach(()=> {
-    return localDb.shutdownDatabase();
   });
 
   const retrieveIntrusionDetectedEvent = ()=> {

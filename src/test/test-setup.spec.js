@@ -1,15 +1,17 @@
-const sinon = require('sinon');
 const chai = require('chai');
 var chaiAsPromised = require("chai-as-promised");
+const localDb = require('./localDatabase');
 
 before(function () {
   chai.use(chaiAsPromised);
 });
 
 beforeEach(function () {
-  this.sandbox = sinon.sandbox.create();
+  return localDb.deleteDatabaseFileDirectory()
+    .then(localDb.createDatabaseFileDirectory)
+    .then(localDb.launchDatabase);
 });
 
 afterEach(function () {
-  this.sandbox.restore();
+  return localDb.shutdownDatabase();
 });
