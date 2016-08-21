@@ -11,7 +11,7 @@ deployment:
   development:
     branch: master
     commands:
-      - './node_modules/node-lambda/bin/node-lambda deploy -p true -a $AWS_DEPLOY_USER_ACCESS_KEY -s $AWS_DEPLOY_USER_SECRET_KEY --role arn:aws:iam::810905322061:role/lambdaFunctionRole -e $CIRCLE_ENV -d "Service responsible for managing property intrusions (CircleCI build: $CIRCLE_BUILD_NUM, Commit id: $CIRCLE_SHA1)"'
+      - './node_modules/node-lambda/bin/node-lambda deploy -p true -a $AWS_DEPLOY_USER_ACCESS_KEY -s $AWS_DEPLOY_USER_SECRET_KEY --role arn:aws:iam::810905322061:role/lambdaFunctionRole -e $CIRCLE_ENV -d "Service responsible for managing property intrusions (CircleCI build: $CIRCLE_BUILD_NUM, Commit id: $CIRCLE_SHA1, Built from branch: $CIRCLE_BRANCH)"'
 
 general:
   artifacts:

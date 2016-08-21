@@ -1,9 +1,8 @@
 var propertyQueryService = require('../property/propertyQueryService');
 var intrusionEventPublisher = require('./intrusionEventPublisher');
 
-const _publishIntrusionOneTimeForAlarmedProperty = (property) => {
-        console.log(`Found property in which motion is currently being detected ${JSON.stringify(property)}`);
-        if (property.alarmEnabled && !property.intrusionDetected) {
+const _publishIntrusionDetectedEventIfPropertyIsAlarmed = (property) => {
+        if (property.alarmEnabled) {
             return intrusionEventPublisher.publish(property);
         }
 };
@@ -11,5 +10,5 @@ const _publishIntrusionOneTimeForAlarmedProperty = (property) => {
 exports.handleEvent = (motionDetectedEvent) => {
     return propertyQueryService
         .findProperty(motionDetectedEvent.tenantId.S, motionDetectedEvent.propertyId.S)
-        .then(_publishIntrusionOneTimeForAlarmedProperty);
+        .then(_publishIntrusionDetectedEventIfPropertyIsAlarmed);
 };
