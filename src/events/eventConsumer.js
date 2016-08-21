@@ -19,6 +19,7 @@ exports.consume = (event, context, callback) => {
                 return callback(null);
             })
             .catch((err) => {
+                console.log(err);
                 return callback(err);
             });
     });

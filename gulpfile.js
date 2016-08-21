@@ -1,8 +1,18 @@
 var gulp = require('gulp');
 var mocha = require('gulp-mocha');
 var istanbul = require('gulp-istanbul');
+var env = require('gulp-env');
 
-gulp.task('test', function (cb) {
+gulp.task('set-test-env', function () {
+    env({
+        vars: {
+            DYNAMODB_PORT: 5688,
+            DYNAMODB_HOST: 'http://localhost'
+        }
+    });
+});
+
+gulp.task('test', ['set-test-env'], function (cb) {
   gulp.src(['./src/**/*.js'])
     .pipe(istanbul())
     .pipe(istanbul.hookRequire())

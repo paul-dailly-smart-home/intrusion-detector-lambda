@@ -1,9 +1,9 @@
 const sinon = require('sinon');
 const chai = require('chai');
-const sinonChai = require('sinon-chai');
+var chaiAsPromised = require("chai-as-promised");
 
 before(function () {
-  chai.use(sinonChai);
+  chai.use(chaiAsPromised);
 });
 
 beforeEach(function () {
