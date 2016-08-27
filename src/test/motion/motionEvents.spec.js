@@ -5,7 +5,7 @@ require('chai').should();
 const PROPERTIES_VIEW_TABLE = 'IntrusionServicePropertiesView';
 const INTRUSION_DETECTED_EVENTS_TABLE = 'IntrusionDetectedEvents';
 
-const _createPropertiesViewTable = () => {
+const createPropertiesViewTable = () => {
   const tableDefinition = {
     AttributeDefinitions: [
       {
@@ -35,7 +35,7 @@ const _createPropertiesViewTable = () => {
   };
   return localDb.createDatabaseTable(tableDefinition);
 };
-const _createIntrusionDetectedEventsTable = () => {
+const createIntrusionDetectedEventsTable = () => {
   const tableDefinition = {
     AttributeDefinitions: [
       {
@@ -69,8 +69,8 @@ const _createIntrusionDetectedEventsTable = () => {
 describe('Motion events:', ()=> {
 
   beforeEach(() => {
-    return _createPropertiesViewTable()
-      .then(_createIntrusionDetectedEventsTable)
+    return createPropertiesViewTable()
+      .then(createIntrusionDetectedEventsTable)
   });
 
   const retrieveIntrusionDetectedEvent = ()=> {
@@ -100,7 +100,7 @@ describe('Motion events:', ()=> {
     return localDb.createTableItem(item, PROPERTIES_VIEW_TABLE);
   };
 
-  const _givenPropertyIsAlarmed = (property, tenant) => {
+  const givenPropertyIsAlarmed = (property, tenant) => {
     const item = {
       tenantId: tenant,
       propertyId: property,
@@ -110,7 +110,7 @@ describe('Motion events:', ()=> {
     return givenProperty(item);
   };
 
-  const _givenPropertyIsNotAlarmed = (property, tenant) => {
+  const givenPropertyIsNotAlarmed = (property, tenant) => {
     const item = {
       tenantId: tenant,
       propertyId: property
@@ -136,7 +136,7 @@ describe('Motion events:', ()=> {
     const tenantId = 'tenant1';
     const propertyId = 'property1';
 
-    const intrusionDetectedEvent = _givenPropertyIsAlarmed(propertyId, tenantId)
+    const intrusionDetectedEvent = givenPropertyIsAlarmed(propertyId, tenantId)
       .then(runTest)
       .then(retrieveIntrusionDetectedEvent);
 
@@ -150,7 +150,7 @@ describe('Motion events:', ()=> {
     const tenantId = 'tenant1';
     const propertyId = 'property1';
 
-    const intrusionDetectedEvent = _givenPropertyIsNotAlarmed(propertyId, tenantId)
+    const intrusionDetectedEvent = givenPropertyIsNotAlarmed(propertyId, tenantId)
       .then(runTest)
       .then(retrieveIntrusionDetectedEvent);
 

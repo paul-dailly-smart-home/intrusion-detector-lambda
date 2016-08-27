@@ -13,7 +13,7 @@ gulp.task('set-test-env', function () {
 });
 
 gulp.task('test', ['set-test-env'], function (cb) {
-  gulp.src(['./src/**/*.js'])
+  gulp.src(['./src/**/*.js', '!./src/test/**'])
     .pipe(istanbul())
     .pipe(istanbul.hookRequire())
     .on('finish', function () {

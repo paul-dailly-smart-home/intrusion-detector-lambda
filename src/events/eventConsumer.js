@@ -1,28 +1,31 @@
 const motionEventService = require('../motion/motionEventService');
+const propertyAlarmService = require('../property/propertyAlarmService');
+
 const eventHandlers = new Map([
-    ['MotionDetectedEvents', motionEventService]
+  ['MOTION_DETECTED', motionEventService.handleEvent],
+  ['ALARM_ENABLED', propertyAlarmService.handleAlarmEnabledEvent]
 ]);
 
-const _extractEventSource = (eventSourceARN) => {
-    return eventHandlers.get('MotionDetectedEvents');
+const _getHandlerForEventType = (eventType) => {
+  return eventHandlers.get(eventType);
 };
 
-exports.consume = (event, context, callback) => {
-    console.log(`Consume called with ${JSON.stringify(event)}`);
-    return event.Records.forEach((record) => {
-        if(record.eventName !== 'INSERT'){
-            return callback();
-        }
-        _extractEventSource(record.eventSourceARN)
-            .handleEvent(record.dynamodb.NewImage.event.M)
-            .then(()=> {
-                return callback(null);
-            })
-            .catch((err) => {
-                console.log(err);
-                return callback(err);
-            });
-    });
+exports.consume = (eventRecord, context, callback) => {
+  console.log(`Consume called with ${JSON.stringify(eventRecord)}`);
+  return eventRecord.Records.forEach((record) => {
+    if (record.eventName !== 'INSERT') {
+      return callback();
+    }
+    var event = record.dynamodb.NewImage.event.M;
+    _getHandlerForEventType(event.eventType.S)(event)
+      .then(()=> {
+        return callback(null);
+      })
+      .catch((err) => {
+        console.log(err);
+        return callback(err);
+      });
+  });
 
 
 };

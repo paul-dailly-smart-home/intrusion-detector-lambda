@@ -1,4 +1,3 @@
-const AWS = require('aws-sdk');
 const dbConnection = require('../database').createDbConnection();
 
 const PROPERTIES_VIEW_TABLE = 'IntrusionServicePropertiesView';
