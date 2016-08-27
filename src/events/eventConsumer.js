@@ -3,7 +3,8 @@ const propertyAlarmService = require('../property/propertyAlarmService');
 
 const eventHandlers = new Map([
   ['MOTION_DETECTED', motionEventService.handleEvent],
-  ['ALARM_ENABLED', propertyAlarmService.handleAlarmEnabledEvent]
+  ['ALARM_ENABLED', propertyAlarmService.handleAlarmEnabledEvent],
+  ['ALARM_DISABLED', propertyAlarmService.handleAlarmDisabledEvent]
 ]);
 
 const _getHandlerForEventType = (eventType) => {

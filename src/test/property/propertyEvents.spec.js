@@ -61,6 +61,16 @@ describe('Property events:', ()=> {
     return givenProperty(item);
   };
 
+  const givenPropertyIsAlarmed = (property, tenant) => {
+    const item = {
+      tenantId: tenant,
+      propertyId: property,
+      alarmEnabled: true
+    };
+
+    return givenProperty(item);
+  };
+
   const retrieveProperty = ()=> {
     const queryCriteria = {
       tenantId: {
@@ -73,9 +83,10 @@ describe('Property events:', ()=> {
     return localDb.retrieveTableItem(queryCriteria, PROPERTIES_VIEW_TABLE);
   };
 
-  const runTest = () => {
+  const runTest = (options) => {
     return new Promise((resolve, reject)=> {
-      const dynamoEvent = _createDynamoRecordForAlarmEnabledEvent();
+      const eventOptions = options || {};
+      const dynamoEvent = _createDynamoRecordForAlarmEnabledEvent(eventOptions);
       eventConsumer.consume({"Records": [dynamoEvent]}, null, (err)=> {
         if (err) {
           return reject(err);
@@ -90,7 +101,7 @@ describe('Property events:', ()=> {
     return createPropertiesViewTable();
   });
 
-  it('Updates property state when alarm is enabled', ()=> {
+  it('Updates property state when alarm enabled event received', ()=> {
     const tenantId = 'tenant1';
     const propertyId = 'property1';
     
@@ -101,14 +112,23 @@ describe('Property events:', ()=> {
     return property.should.eventually.have.deep.property('alarmEnabled.BOOL', true);
   });
 
-  //TODO: Removes entry from alarmed properties view in reaction to property alarm disabled event
+  it('Updates property state when alarm disabled event received', () => {
+    const tenantId = 'tenant1';
+    const propertyId = 'property1';
+
+    const property = givenPropertyIsAlarmed(propertyId, tenantId)
+      .then(runTest.bind(null, {eventType: 'ALARM_DISABLED'}))
+      .then(retrieveProperty);
+
+    return property.should.eventually.have.deep.property('alarmEnabled.BOOL', false);
+  });
   
 });
 
-const _createDynamoRecordForAlarmEnabledEvent = (eventName, tenantId, propertyId) => {
+const _createDynamoRecordForAlarmEnabledEvent = (options) => {
   return {
     "eventID": "5e33be5c18d151fef734151b5235c245",
-    "eventName": eventName || 'INSERT',
+    "eventName": options.eventName || 'INSERT',
     "eventVersion": "1.1",
     "eventSource": "aws:dynamodb",
     "awsRegion": "eu-west-1",
@@ -129,13 +149,13 @@ const _createDynamoRecordForAlarmEnabledEvent = (eventName, tenantId, propertyId
               "S": "event1"
             },
             "tenantId": {
-              "S": tenantId || 'tenant1'
+              "S": options.tenantId || 'tenant1'
             },
             "eventType": {
-              "S": "ALARM_ENABLED"
+              "S": options.eventType || 'ALARM_ENABLED'
             },
             "propertyId": {
-              "S": propertyId || 'property1'
+              "S": options.propertyId || 'property1'
             },
             "source": {
               "S": "device1"
@@ -150,6 +170,6 @@ const _createDynamoRecordForAlarmEnabledEvent = (eventName, tenantId, propertyId
       "SizeBytes": 162,
       "StreamViewType": "NEW_IMAGE"
     },
-    "eventSourceARN": "arn:aws:dynamodb:eu-west-1:810905322061:table/AlarmEnabledEvents/stream/2016-07-02T18:20:00.773"
+    "eventSourceARN": "arn:aws:dynamodb:eu-west-1:810905322061:table/AlarmEvents/stream/2016-07-02T18:20:00.773"
   };
 };

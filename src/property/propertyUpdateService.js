@@ -15,7 +15,7 @@ exports.updateProperty = (property)=> {
     }
   };
   const updateCriteria = {
-    ":alarmEnabledVal": {"BOOL": true}
+    ":alarmEnabledVal": {"BOOL": property.alarmEnabled}
   };
   const updateExpression = 'set alarmEnabled = :alarmEnabledVal';
 
@@ -27,9 +27,8 @@ exports.updateProperty = (property)=> {
   };
 
   return new Promise((resolve, reject) => {
-    console.log(`PropertyUpdateService: ${JSON.stringify(params)}`);
     dbConnection.updateItem(params, (err, data) => {
-      if(err){
+      if (err) {
         reject(new IntrusionServiceError(`Error updating property ${property.propertyId} alarm status for tenant ${property.tenantId}: ${err.message}`, PROPERTY_UPDATE_ERROR));
       }
       resolve(data);
