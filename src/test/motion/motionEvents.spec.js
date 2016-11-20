@@ -85,6 +85,18 @@ describe('Motion events:', ()=> {
     return localDb.retrieveTableItem(queryCriteria, INTRUSION_DETECTED_EVENTS_TABLE);
   };
 
+  const retrieveProperty = () => {
+    const queryCriteria = {
+      tenantId: {
+        S: 'tenant1'
+      },
+      propertyId: {
+        S: 'property1'
+      }
+    };
+    return localDb.retrieveTableItem(queryCriteria, PROPERTIES_VIEW_TABLE);
+  };
+
   const givenProperty = (property) => {
     const item = {
       tenantId: {
@@ -95,6 +107,9 @@ describe('Motion events:', ()=> {
       },
       alarmEnabled: {
         BOOL: property.alarmEnabled || false
+      },
+      intrusionInProgress: {
+        BOOL: property.intrusionInProgress || false
       }
     };
     return localDb.createTableItem(item, PROPERTIES_VIEW_TABLE);
@@ -119,6 +134,17 @@ describe('Motion events:', ()=> {
     return givenProperty(item);
   };
 
+  const givenIntrusionInProgressAtAlarmedProperty = (property, tenant) => {
+    const item = {
+      tenantId: tenant,
+      propertyId: property,
+      alarmEnabled: true,
+      intrusionInProgress: true
+    };
+
+    return givenProperty(item);
+  };
+
   const runTest = () => {
     return new Promise((resolve, reject)=> {
       const dynamoEvent = _createDynamoRecordForMotionDetectedEvent();
@@ -131,7 +157,7 @@ describe('Motion events:', ()=> {
       });
     });
   };
-  
+
   it('Creates an intrusion detected event when motion detected at an alarmed property', ()=> {
     const tenantId = 'tenant1';
     const propertyId = 'property1';
@@ -143,6 +169,21 @@ describe('Motion events:', ()=> {
     return Promise.all([
       intrusionDetectedEvent.should.eventually.have.deep.property('tenantId.S', 'tenant1'),
       intrusionDetectedEvent.should.eventually.have.deep.property('propertyId.S', 'property1')
+    ]);
+  });
+
+  it('Updates property as having an intrusion in progress when motion detected at an alarmed property', ()=> {
+    const tenantId = 'tenant1';
+    const propertyId = 'property1';
+
+    const property = givenPropertyIsAlarmed(propertyId, tenantId)
+      .then(runTest)
+      .then(retrieveProperty.bind(null, propertyId, tenantId));
+
+    return Promise.all([
+      property.should.eventually.have.deep.property('tenantId.S', 'tenant1'),
+      property.should.eventually.have.deep.property('propertyId.S', 'property1'),
+      property.should.eventually.have.deep.property('intrusionInProgress.BOOL', true)
     ]);
   });
 
@@ -158,6 +199,17 @@ describe('Motion events:', ()=> {
       .should.eventually.equal(undefined);
   });
 
+  it('Does not create an intrusion detected event when motion is detected at an alarmed which already has an unacknowledged intrusion', ()=> {
+    const tenantId = 'tenant1';
+    const propertyId = 'property1';
+
+    const intrusionDetectedEvent = givenIntrusionInProgressAtAlarmedProperty(propertyId, tenantId)
+      .then(runTest)
+      .then(retrieveIntrusionDetectedEvent);
+
+    return intrusionDetectedEvent
+      .should.eventually.equal(undefined);
+  });
 
   it('Does not create an intrusion detected event when motion detected at an unknown property', ()=> {
     return runTest()
@@ -165,16 +217,6 @@ describe('Motion events:', ()=> {
       .should.be.rejected;
   });
 
-
-//TODO: decide whether this test should live here
-// it('Only processes INSERT records', (done)=> {
-//
-//     const dynamoEvent = _createDynamoRecordForMotionDetectedEvent('INSERT');
-//     eventConsumer.consume({"Records": [dynamoEvent]}, null, (err)=> {
-//
-//         done();
-//     });
-// });
 
 })
 ;

@@ -38,7 +38,8 @@ exports.findProperty = (tenantId, propertyId) => {
             const property = {
                 tenantId: propertyViewItem.tenantId.S,
                 propertyId: propertyViewItem.propertyId.S,
-                alarmEnabled: propertyViewItem.alarmEnabled.BOOL
+                alarmEnabled: propertyViewItem.alarmEnabled.BOOL,
+                intrusionInProgress: propertyViewItem.intrusionInProgress.BOOL
             };
             
             return resolve(property);

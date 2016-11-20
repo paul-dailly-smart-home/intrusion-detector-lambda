@@ -1,14 +1,21 @@
 var propertyQueryService = require('../property/propertyQueryService');
+var propertyUpdateService = require('../property/propertyUpdateService');
 var intrusionEventPublisher = require('./intrusionEventPublisher');
 
 const _publishIntrusionDetectedEventIfPropertyIsAlarmed = (property) => {
-        if (property.alarmEnabled) {
-            return intrusionEventPublisher.publish(property);
-        }
+  if (property.alarmEnabled && !property.intrusionInProgress) {
+    property.intrusionInProgress = true;
+    return propertyUpdateService.updateProperty(property)
+      .then(() => {
+        intrusionEventPublisher.publish(property)
+      });
+  }
 };
 
 exports.handleEvent = (motionDetectedEvent) => {
-    return propertyQueryService
-        .findProperty(motionDetectedEvent.tenantId.S, motionDetectedEvent.propertyId.S)
-        .then(_publishIntrusionDetectedEventIfPropertyIsAlarmed);
+  var tenantId = motionDetectedEvent.tenantId.S;
+  var propertyId = motionDetectedEvent.propertyId.S;
+  return propertyQueryService
+    .findProperty(tenantId, propertyId)
+    .then(_publishIntrusionDetectedEventIfPropertyIsAlarmed)
 };

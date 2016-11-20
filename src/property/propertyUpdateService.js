@@ -15,9 +15,10 @@ exports.updateProperty = (property)=> {
     }
   };
   const updateCriteria = {
-    ":alarmEnabledVal": {"BOOL": property.alarmEnabled}
+    ":alarmEnabledVal": {"BOOL": property.alarmEnabled || false},
+    ":intrusionInProgressVal": {"BOOL": property.intrusionInProgress || false}
   };
-  const updateExpression = 'set alarmEnabled = :alarmEnabledVal';
+  const updateExpression = 'set alarmEnabled = :alarmEnabledVal, intrusionInProgress = :intrusionInProgressVal';
 
   const params = {
     Key: queryCriteria,
